@@ -34,6 +34,13 @@ class GFlasso:
         L1 = L1*L1
         self.L = L1
 
+    def setGroupFeatureIndex(self, ind):
+        '''
+        :param ind: a list of indices, for example: [[0, 1, 2], [3, 4, 5, 6, 7], [8, 9]]
+        :return: None
+        '''
+        self.indices = [np.array(a) for a in ind]
+
     def gflasso_fusion_penalty(self):
         num_rows = self.corr_coff.shape[0]
         num_cols = self.corr_coff.shape[1]
@@ -56,7 +63,7 @@ class GFlasso:
     def cost(self):
         return (
             ((self.y - self.X.dot(self.beta)) * (self.y - self.X.dot(self.beta))).sum() +
-            self.lambda_flasso * (abs(self.beta).sum()) +
+            self.lambda_flasso * np.sum([np.linalg.norm(self.beta[ind,:], ord=2) for ind in self.indices]) +
             self.gamma_flasso * (self.gflasso_fusion_penalty())  # 1e5
         )
 
@@ -110,13 +117,15 @@ class GFlasso:
     def getL(self):
         return self.L + (self.edge_vertex_matrix * self.edge_vertex_matrix).sum() / self.mau
 
-    def proximal_operator(self, in_, f):
-        sign = in_.copy()
-        sign[sign > 0] = 1
-        sign[sign < 0] = -1
-        in_ = abs(in_) - f * self.lambda_flasso / self.getL()
-        in_[in_ < 0] = 0
-        return in_ * sign
+    def proximal_operator(self, B, f):
+        t = f * self.lambda_flasso / self.getL()
+        result = np.zeros_like(B)
+        for ind in self.indices:
+            normTmp = np.linalg.norm(B[ind], ord=2)
+            if normTmp > t:
+                result[ind] = B[ind] - B[ind]/normTmp
+
+        return result
 
 
 if __name__ == '__main__':
