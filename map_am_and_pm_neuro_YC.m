@@ -2,7 +2,7 @@ close all; clear;clc
 
 Work_path = '/Users/chenyu/Workspace/Nuerohackason2017/';
 
-load([Work_path 'Data/2105_NC_170516_PLANE1_PINKNOISE_dataOut.mat'])
+load([Work_path 'Data/2105_NC_170516_PLANE2_PINKNOISE_dataOut.mat'])
 
 
 a = dataOut.trial(1).segmentmask;
@@ -38,7 +38,7 @@ text(b_ + 5,a_,labels, 'Color', [0.7 0.7 0]);
 
 
 
-load([Work_path 'Data/2105_NC_170518_PLANE1_PINKNOISE_dataOut.mat'])
+load([Work_path 'Data/2105_NC_170518_PLANE2_PINKNOISE_dataOut.mat'])
 
 a = dataOut.trial(1).segmentmask;
 
